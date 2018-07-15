@@ -1,7 +1,13 @@
 import React, { Component } from 'react'
+import SnackBar from './SnackBar'
+
 import firebase from '../firebase.js'
 
 export default class SaveToFavorites extends Component {
+  state = {
+    snackMessage: ''
+  }
+
   // Add to Favorites
   saveToFavorites = mlsId => e => {
     e.preventDefault()
@@ -11,9 +17,17 @@ export default class SaveToFavorites extends Component {
       userId: this.props.userId,
       mlsId: mlsId
     })
-    .then(function(docRef) {
-      console.log("Favorite saved with ID: ", docRef.id);
-      alert("Favorite Saved!")
+    .then(docRef => {
+      // Lets display our Snackbar
+      this.setState({
+        snackMessage: "Favorite saved with ID: " + docRef.id
+      })
+
+      window.setTimeout( () => {
+        this.setState({
+          snackMessage: ''
+        })
+      } , 5000)
     })
     .catch(function(error) {
       console.error("Error adding favorite: ", error);
@@ -22,7 +36,10 @@ export default class SaveToFavorites extends Component {
 
   render() {
     return (
-      <button type="button" onClick={this.saveToFavorites(this.props.mlsId)} className="btn btn-primary float-right"><i className="fas fa-heart"></i> Save to Favorites</button>
+      <div>
+        <button type="button" onClick={this.saveToFavorites(this.props.mlsId)} className="btn btn-primary float-right"><i className="fas fa-heart"></i> Save to Favorites</button>
+        {  this.state.snackMessage ? <SnackBar snackMessage={this.state.snackMessage}/> : null }
+      </div>
     );
   }
 }
